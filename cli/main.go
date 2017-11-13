@@ -110,6 +110,8 @@ Commands:
 		createFlagSet := flag.NewFlagSet("create", flag.ExitOnError)
 		extPtr := createFlagSet.String("ext", "", "File extension")
 		dirPtr := createFlagSet.String("dir", "", "Directory to place file in (default: current working directory)")
+		timestampFormatPtr := createFlagSet.String("timestamp-format", "epoch", "Timestamp format for migration file (default: Unix epoch)")
+
 		createFlagSet.Parse(args)
 
 		if createFlagSet.NArg() == 0 {
@@ -124,7 +126,7 @@ Commands:
 			*dirPtr = strings.Trim(*dirPtr, "/") + "/"
 		}
 
-		timestamp := startTime.Unix()
+		timestamp := createTimestamp(*timestampFormatPtr, startTime)
 
 		createCmd(*dirPtr, timestamp, name, *extPtr)
 

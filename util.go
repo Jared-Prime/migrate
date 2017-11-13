@@ -2,9 +2,11 @@ package migrate
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	nurl "net/url"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -102,4 +104,22 @@ func FilterCustomQuery(u *nurl.URL) *nurl.URL {
 	}
 	ux.RawQuery = vx.Encode()
 	return &ux
+}
+
+func createTimestamp(format string, startTime time.Time) (int64, error) {
+	var timestamp int64
+	var err error
+
+	switch format {
+	case "rails":
+		ts := startTime.Format("20060102150405")
+
+		timestamp, err = strconv.ParseInt(ts, 10, 64)
+	case "epoch", "unix":
+		timestamp = startTime.Unix()
+	default:
+		err = errors.New(fmt.Sprintf("unsupported timestamp format: %s", format))
+	}
+
+	return timestamp, err
 }
